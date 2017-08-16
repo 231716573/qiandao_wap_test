@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Cache-control" content="120" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no" />
+	<title>Document</title>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/ecmascript" src="js/md5.js"></script>
+<!-- <script type="text/javascript" src="http://www.coding123.net/getip.ashx?js=1"></script> -->
+<script type="text/javascript" src="JS/loading.js"></script>
+<link rel="stylesheet" type="text/css" href="css/reset.css">
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<style type="text/css">
+/*中间内容*/
+.section_list { margin-top: 44px; }
+.section_list dl { clear: both; overflow: hidden; padding:10px 20px; border-bottom: 1px solid #bfbfbf; font-size: 0.875rem; }
+.section_list dl dt { float: left; width: 90px; color: #666; line-height: 25px;overflow: hidden;}
+.section_list dl dd { line-height: 25px; }
+.section_list .beizhu span { float: left; }
+.section_list .beizhu textarea { width:100%; margin-top: 5px;}
+.section_list .beizhu .beizhu_button { float: right; }
+#tel_a { color: blue; }
+.phone { background: url(images/phone.png) center right no-repeat; }
+#qd { padding:3px 20px;margin-left:40px;background-color: #fff; border:1px solid gray; border-radius:3px;-webkit-border-radius:3px; 
+	  background: -moz-linear-gradient(top, #fff 0%, gray 150%);
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fff), color-stop(150%,gray));
+      background: -webkit-linear-gradient(top, #fff 0%,gray 150%);
+      background: -o-linear-gradient(top, #fff 0%,gray 150%);
+      background: -ms-linear-gradient(top, #fff 0%,gray 150%);
+      background: linear-gradient(to bottom, #fff 0%,gray 150%);}
+</style>
+<script type="text/javascript">
+var apply_Id = 0;
+var ui_d = 0;
+var user_name = "";
+var activity_Id = 0;
+var _code = "";
+var shop_Id = 0;
+var code_Id = 0;
+var admin_Id = 1;
+var admin_Name = "";
+var _ip ="";
+
+$(function (){
+
+	loading(true);
+
+	var url = urlall+"validate/apply/getApplyDetails.json?applyId="+GetString("applyId")+"&uid="+GetString("uid")+"&accessToken="+GetString("accessToken");
+
+	var qdYesNo = "";
+
+	$(".back_history").bind("click",function (){
+		window.location.href = "history.html?uid="+window.localStorage["uid"]+"&activityId="+GetString("activityId")+"&accessToken="+GetString("accessToken");
+
+	})
+
+	$.getJSON(url,
+	function(data){
+
+		// console.log("data.obj.applyId:"+JSON.stringify(data))
+		// ip = ip.substring(1,ip.length)
+
+		apply_Id = data.obj.applyId;
+		ui_d = data.obj.uid;
+		user_name =  data.obj.username;
+		activity_Id = data.obj.activityId;
+		_code = data.obj.verifyInfo.code;
+		shop_Id = data.obj.shopId;
+		code_Id = data.obj.verifyInfo.codeId;
+		admin_Id = window.localStorage["uid"];
+		admin_Name = window.localStorage["username"];
+		_ip = '192.169.19.249';
+
+		$(".qwl_header span").html(data.obj.title)
+		$(".fatherName").html(data.obj.username)
+		$(".phone").html(data.obj.mobile)
+		$("#tel_a").attr({"href":"tel:"+data.obj.mobile})
+		$(".number").html(data.obj.applyNum)
+		$(".payAddress").html(data.obj.orderInfo.payType)
+		$(".momery").html(data.obj.orderInfo.priceTotal)
+		if(data.obj.verifyInfo.statusName =="已验证"){
+
+			qdYesNo = $('<dd class="qd_yes qd_delete" style="color:green;">已签到</dd>')
+		}else{
+
+			qdYesNo = $('<dd class="qd_no qd_delete" style="color:red;">未签到 <input type="button" value="签到" id="qd" onclick="senduser();" /></dd>')
+		}
+		$(".qd").append(qdYesNo)
+		$(".core").html(data.obj.verifyInfo.code)
+
+		$.each(data.obj.peopleInfo.childInfo, function (index, _obj){
+
+			if(index == data.obj.peopleInfo.childInfo.length-1){
+				var childname = $('<span>'+_obj.realname+'</span>')
+			}else{
+				var childname = $('<span>'+_obj.realname+'、</span>')
+			}
+
+			$(".babyName").append(childname)
+		})
+
+		loading(false);
+	})
+})
+
+
+// 签到   
+function senduser(){
+	var oDate = new Date();
+	var timestamp = parseInt(oDate.getTime()/1000);
+	var key = 'l5pqXUqV5VpuEpx7';
+	var sign = hex_md5(key+timestamp);
+
+	var data =  {
+				"code":_code,
+				"shopId":shop_Id,
+				"adminId":admin_Id ,
+				"adminName":admin_Name,
+				"timestamp":timestamp,
+				"sign":sign
+			};
+
+	// console.log("data:"+data)
+
+	$.ajax({
+		type: "POST",
+		url: "http://129.1.28.1/dataapi.php?mod=activity&action=verify",
+		data:data,
+		success: function (data){
+
+			var data = JSON.parse(data)
+			// console.log("jsonData:"+jsonData)
+			// console.log("url:"+"http://192.168.19.249:8080/7wanlsoa/validate/apply/updateStatus.json?accessToken="+GetString("accessToken"))
+			// console.log("data1111111:"+JSON.stringify(data))
+
+			if(data.code == 0){
+
+				$(".qd_delete").remove();
+				var qdYes = $('<dd class="qd_yes qd_delete" style="color:green;">已签到</dd>')
+
+				$(".qd").append(qdYes)
+
+				setTimeout(function (){
+					window.location.href = "history.html?uid="+window.localStorage["uid"]+"&activityId="+GetString("activityId")+"&accessToken="+GetString("accessToken");
+				},1500)
+
+			}else if(data.code == -1){
+				alert("签到失败，请重试！")
+			}
+		},
+		error: function() {
+		 	alert('发生未知错误，请重新加载页面');  
+		 	window.location.reload();
+		}
+	})
+}
+
+// 取得url参数
+function GetString(name){
+
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+
+</script>
+</head>
+<body>
+	<header class="qwl_header"><a class="back_history"></a><span style="width:91%;display:inline-block;"></span></header>
+
+	<section class="section_list">
+		<div>
+			<dl>
+				<!-- <div id="keleyivisitorip"></div> -->
+				<dt>用户名：</dt>
+				<dd class="fatherName"></dd>
+			</dl>
+			<dl>
+				<dt>孩子姓名：</dt>
+				<dd class="babyName"></dd>
+			</dl>
+			<dl>
+				<dt>电话：</dt>
+				<a id="tel_a"><dd class="phone"></dd></a>
+			</dl>
+			<dl>
+				<dt>人数：</dt>
+				<dd class="number"></dd>
+			</dl>
+			<dl>
+				<dt>金额：</dt>
+				<dd class="momery"></dd>
+			</dl>
+			<dl>
+				<dt>支付方式：</dt>
+				<dd class="payAddress"></dd>
+			</dl>
+			<dl class="qd">
+				<dt>签到状态：</dt>
+			</dl>
+			<dl>
+				<dt>签到码：</dt>
+				<dd class="core"></dd>
+			</dl>
+			<dl class="beizhu" style="display:none;">
+				<dd><span>备注：</span><input type="button" value="保存" class="beizhu_button" onclick="senduser();" style="padding:3px 5px;" /><textarea name="" id="" rows="3"></textarea></dd>
+			</dl>
+		
+		</div>
+	</section>
+</body>
+</html>

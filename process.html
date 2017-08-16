@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Cache-control" content="120" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no" />
+	<title>Document</title>
+<script type="text/javascript" src="JS/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/reset.css">
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<style type="text/css">
+/*流程内容*/
+#work_process { margin:80px 0px 50px; width: 100%; }
+#work_process .work_process_head { text-align: center; font-size: 1rem;}
+#work_process div { margin: 15px 10px; font-size: 0.8rem; line-height: 19px;}
+</style>
+<script type="text/javascript">
+$(function (){
+	$(".go_activity_list").bind("click",function (){
+    	window.location.href = "activity_list.html?uid="+ window.localStorage["uid"]+ "&accessToken=" + GetString("accessToken");
+    })
+
+    $(".go_history_list").bind("click",function (){
+    	window.location.href = "history_list.html?uid="+ window.localStorage["uid"]+ "&accessToken=" + GetString("accessToken");
+    })
+
+    $("#login_msg_i").html(window.localStorage["username"])
+
+    $(".exit").bind("click",function (){
+    	window.location.href = "login.html";
+    	localStorage.clear();
+    })
+})
+function GetString(name){
+
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+
+</script>
+</head>
+<body>
+	<details>头部固定</details>
+	<header class="qwl_header">去玩了签到</header>
+	<div id="login_msg"><span>工作流程</span><i id="login_msg_i"></i>&nbsp; <a class="exit">退出</a></div>
+
+	
+	<div id="work_process">
+		<details>流程内容</details>
+		<div class="work_process_head">工作流程</div>
+		<div>一、活动执行三要素：提前准备、灵活应变、紧密配合。</div>
+		<div>二、活动执行前注意事项：<br />1、物料的准备：常规物料的准备及活动物料的准备;<br />2、活动内容的了解：和商家提前沟通，了解活动内容，确认活动流程以及注意事项;<br />3、活动场地的考察：对环境和地形有个初步的了解，知道洗手间、休息区，预备好游戏区域及拍大合照区域。</div>
+		<div>三、活动的常规流程：<br />1、提前半小时到达活动场地，与合作方提前沟通活动流程，了解场地，选择好签到区，检查物料，在集合点手举导旗等待用户到来;<br />
+										2、集合签到：热情接待，仔细核对验证码，快而有序的完成签到，电联没有到场的家长，确认是否出席;<br />
+										3、拍大合照：有序互动，调动气氛，喊口号“去玩了”;<br />
+										4、活动开始：执行人员开场，欢迎各位用户，自我介绍，简单介绍活动流程，并进行安全提醒及注意事项说明，介绍合作方老师出场;<br />
+										5、活动体验：强调安全及注意事项，协助合作方讲解示范、带领参观，进入活动主题;<br />
+										6、活动结束：总结分享，宣传去玩了平台下周新活动，派发宣传单张，引导扫码，发动用户去平台达人圈分享活动和查看活动回顾。</div>
+	</div>
+	<div id="chajia" style="width:100%;margin-bottom:50px;text-align:center;">
+		<p style="text-align:left;">补差价二维码：</p>
+		<img src="images/chajia.jpg" alt="" style="display:inline-block;max-width:100%;">
+	</div>
+	<nav class="nav_three">
+		<details>底部三个签到按钮</details>
+		<a class="go_activity_list">活动列表</a>
+		<a class="go_history_list">签到历史</a>
+		<a class="nav_three_color">工作流程</a>
+	</nav>
+</body>
+</html>

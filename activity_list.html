@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Cache-control" content="120" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no" />
+	<title>Document</title>
+<script type="text/javascript" src="JS/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="JS/loading.js"></script>
+<link rel="stylesheet" type="text/css" href="css/reset.css">
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<style type="text/css">
+/*中间内容*/
+#article_list { margin-top:65px; margin-bottom: 44px;}
+.section_list { background-color: #fff; margin-bottom: .1rem; color: gray; }
+.section_list p { background-color: #bfbfbf; color: #fff; font-size: 0.7rem; text-align: center; width: 100%; padding: .1rem 0; }
+.section_list .section_list_div { position: relative;display: block; padding: 5px 10px; border-bottom: 1px solid #bfbfbf; color: gray;}
+.section_list .section_list_div div { font-size: 0.7rem; line-height: 19px; }
+.section_list .section_list_div span { display: block; position: absolute; right: 10px; top: 50%; margin-top: -7px; font-size: .7rem;  }
+.section_list .section_list_div .section_list_div1 { font-size: 1rem; color: black; white-space: nowrap; overflow: hidden; text-overflow:ellipsis;}
+.section_list .section_list_div .span_changeColor i { color: green;  }
+.section_list .section_list_div span i { color: red; }
+</style>
+<script type="text/javascript">
+
+$(function (){
+
+	loading(true);
+
+    $("#login_msg_i").html(window.localStorage["username"])
+
+    $(".window_reload").bind("click",function (){
+    	window.location.reload();
+    })
+
+    $(".go_history_list").bind("click",function (){
+    	window.location.href = "history_list.html?uid="+ window.localStorage["uid"]+"&accessToken="+GetString("accessToken");
+    })
+
+    $(".go_process").bind("click",function (){
+    	window.location.href = "process.html?uid="+ window.localStorage["uid"]+"&accessToken="+GetString("accessToken");
+    })
+
+    $(".chajia").bind("click",function (){
+    	window.location.href = "chajia.html?uid="+ window.localStorage["uid"]+"&accessToken="+GetString("accessToken");
+    })
+
+	var url = urlall+"validate/activity/getThisWeekActivityList.json?uid="+window.localStorage["uid"]+"&accessToken="+GetString("accessToken");
+
+	$.getJSON(url,
+	function(data) {
+
+		if(data.code == -1){
+
+			$(".this_no").css("display","block")
+			$(".chajia").css("display","none")
+
+		}else if(data.code == 0){
+
+			$.each(data.obj, function (index, obj){
+
+				var $actList = $(".chajia")
+
+				if(obj.validateCount == obj.verifyCount){
+					var activity = $("<a href='activity.html?uid="+window.localStorage["uid"]+"&activityId="+obj.activityId+"&accessToken="+ GetString("accessToken")+"' class='section_list_div'><div class='section_list_div1'>"+obj.title+"</div><div>报名："+obj.verifyCount+"人</div><div class='span_changeColor'><i>签到："+obj.validateCount+"人</i></div><div>活动时间："+obj.startTime+"</div><span class='span_changeColor'><i>签到</i> &nbsp;></span></a>")
+				}else{
+					var activity = $("<a href='activity.html?uid="+window.localStorage["uid"]+"&activityId="+obj.activityId+"&accessToken="+ GetString("accessToken")+"' class='section_list_div'><div class='section_list_div1'>"+obj.title+"</div><div>报名："+obj.verifyCount+"人</div><div><i>签到："+obj.validateCount+"人</i></div><div>活动时间："+obj.startTime+"</div><span><i>签到</i> &nbsp;></span></a>")
+				}
+
+				$actList.before(activity);
+			})
+		}else if(data.code == -2){
+
+			alert("登录失效，请重新登录！")
+			window.location.href = "login.html";
+		}
+
+		loading(false);
+	})
+})
+// 取得url参数
+function GetString(name){
+
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+
+
+$(function (){
+	$(".exit").bind("click",function (){
+    	window.location.href = "login.html";
+    	localStorage.clear();
+    })
+})
+</script>
+</head>
+<body>
+	<details>头部固定</details>
+	<header class="qwl_header"><img src="images/reload.png" class="window_reload">去玩了签到</header>
+	<div id="login_msg"><span>本周活动签到</span><i id="login_msg_i"></i>&nbsp; <a class="exit">退出</a></div>
+
+	<article id="article_list">
+		<details>中间内容</details>
+		<section class="section_list">
+			<a class="section_list_div chajia" style="display:none;">
+				<div class="section_list_div1" style="height:50px;;line-height:50px;">补差价专用<i style="font-size:0.7rem;">&lt;用户扫描二维码&gt;</i></div>
+				<div>活动时间：2015-12-26 08:00 一 2015-12-26 08:00</div>
+				<span style="margin-top:-17px;"><i style="color:blue;">进入</i> &nbsp;></span>
+			</a>
+		</section>
+	</article>
+	<div style="width:100%;margin-top:200px;text-align:center; display:none;" class="this_no">啊噢，此小丸子本周不需要带队...</div>
+
+	<nav class="nav_three">
+		<details>底部三个签到按钮</details>
+		<a class="nav_three_color">活动列表</a>
+		<a class="go_history_list" >签到历史</a>
+		<a class="go_process">工作流程</a>
+	</nav>
+</body>
+</html>

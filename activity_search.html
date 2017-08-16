@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Cache-control" content="120" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no" />
+	<title>Document</title>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/reset.css">
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<style type="text/css">
+#header_search .search_img { position: absolute; left:-30px; top:10px;}
+#header_search .search_text { width: 100%; height:20px; }
+#header_search .search_x { position: absolute; right:5px; top:1px; color: black; }
+#header_search #search_button { position: absolute; right: -50px; display: block; padding: .25rem; top:11px; border-radius: 3px; -webkit-border-radius:3px; border: 1px solid #232323; background-color: #fff; }
+
+/*中间内容*/
+#article_list { margin-top:44px; margin-bottom: 44px;}
+.section_list { background-color: #fff; color: gray; }
+.section_list .section_list_div { position: relative;display: block; padding: 5px 10px; border-bottom: 1px solid #bfbfbf; color:gray; }
+.section_list .section_list_div div { font-size: 0.7rem; line-height: 19px; }
+.section_list .section_list_div span { display: block; position: absolute; right: 10px; top: 50%; margin-top: -7px; font-size: .7rem; }
+.section_list .section_list_div .section_list_div1 { font-size: 1rem; height: 60px; line-height: 30px; color: black; white-space: nowrap; overflow: hidden; text-overflow:ellipsis;}
+.section_list .section_list_div .section_list_div1 i { font-size: 0.8rem; margin-left: 15px; }
+.section_list .section_list_div .span_changeColor i { color: green; }
+.section_list .section_list_div span i { color: red; }
+</style>
+<script type="text/javascript">
+$(function (){
+	$(".search_x").css("display","none")
+
+	$(".search_text").keydown(function (){
+		$(".search_x").css("display","inline")
+	})
+
+	$(".search_x").click(function (){
+		$(".search_text").val("")
+		$(".search_x").css("display","none")
+	})
+
+	$(".search_text").keyup(function (){
+		if($(".search_text").val()==""){
+			$(".search_x").css("display","none")
+		}
+	})
+})
+
+
+// 搜索
+function senduser(){
+
+	$.ajax({
+		type: "POST",
+		url: "http://test.7wanl.com/7wanlsoa/validate/apply/getApplyListByCondition.json?activityId=" + GetString("activityId") + "&condition=" + $(".search_text").val(),
+		data:"{" + "\"activityId\": " + GetString("activityId") + "," + "\"condition\": " + "\"" + $(".search_text").val() + "\"" + "}",
+		dataType: "json",
+		success: function (data){
+			// console.log("data:"+JSON.stringify(data))
+			$(".section_list_div").remove();
+
+			var list_a = "";
+
+			if(data.code == -1){
+
+				list_a = $('<a class="section_list_div"><div class="section_list_div1" style="line-height:60px;">'+data.msg+'</div></a>');
+
+				$(".section_list").html(list_a);
+
+			}else if(data.code == 0){
+
+				$.each(data.obj.applyList, function (index, obj){
+
+					var childarr = [];
+
+					$.each(obj.peopleInfo.childInfo,function (_index, _obj){
+
+						var childname = _obj.realname
+
+						childarr.push(childname)
+					})
+
+					childarr = childarr.join('、');
+
+					var codeStatus  = obj.codeStatus;
+
+					if(codeStatus == "1"){
+
+						var list_a = $('<a href="activity_msg.html?uid='+obj.uid+'&applyId='+obj.applyId+'" class="section_list_div"><div class="section_list_div1">'+obj.username+'<i>'+obj.mobile+'</i><br />'+childarr+'</div><span><i>未签到</i> &nbsp;&nbsp;</span></a>');
+
+					}else if(codeStatus == "2"){
+
+						var list_a = $('<a href="activity_msg.html?uid='+obj.uid+'&applyId='+obj.applyId+'" class="section_list_div"><div class="section_list_div1">'+obj.username+'<i>'+obj.mobile+'</i><br />'+childarr+'</div><span class="span_changeColor"><i>已签到</i> &nbsp;&nbsp;</span></a>');
+
+					}
+
+					$(".section_list").append(list_a);
+			 	})
+
+			}
+		},
+		error: function() {
+		 	alert('发生未知错误，请重新加载页面');  
+		 	window.location.reload();
+		}
+	})
+}
+
+// 取得url参数
+function GetString(name){
+
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+</script>
+</head>
+<body>
+	<details>头部固定</details>
+	<header class="qwl_header" id="header_search" style="text-align:center;">
+		<a id="header_search_a" onclick="javascript:history.go(-1);"></a>
+		<div style="position:relative;width:60%;display:inline-block;"><img src="images/search.jpg" alt="查找" class="search_img"><input type="text" class="search_text" /><span class="search_x">x</span><input type="button" value="确定" id="search_button" onclick="senduser();" /></div>
+	</header>
+
+	<article id="article_list">
+		<details>中间内容</details>
+		<section class="section_list"></section>
+	</article>
+</body>
+</html>

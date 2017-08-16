@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Cache-control" content="120" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no" />
+	<title>Document</title>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/reset.css">
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<style type="text/css">
+#login_core { height:50px; width: 100%; background-color: #ccc;position:fixed; z-index: 10; top: 0px; margin-top: 44px; }
+#login_core .login_core_input { margin-right: 30px; position: relative;}
+#login_core .login_core_input input[type=number] { width: 100%; height:25px; padding: 5px 0px 5px 5px; margin-left: 10px;margin-top: 5px; }
+#login_core .login_core_input input[type=button] { position: absolute; top:10px; right:-13px; padding: 0px 9px; height:27px; line-height: 27px; background-color: #fff; border:1px solid black; border-radius:3px;-webkit-border-radius:3px; }
+#login_core .login_core_get { float: right; margin-top: 9px;margin-right: 10px; }
+.go_search { position: fixed; z-index: 10; top: 10px; right: 55px; }
+.ime-disabled{ ime-mode:disabled; }
+
+
+#a_list { position: fixed; z-index: 10; right:0px; top:50%; width: 30px; font-size: 0.8rem; margin-top: -190px; text-align: center;}
+#a_list a{ display: block; color: #232323;}
+/*中间内容*/
+#article_list { margin-top:94px; margin-bottom: 44px;}
+.section_list { background-color: #fff; color: gray; }
+.section_list .section_list_a { border-top:94px solid #fff; margin-top: -94px; display:block; }
+.section_list .section_list:first-child a { margin-top: -4px; }
+.section_list p { color: #232323; font-size: 0.7rem; text-align: center; height: 18px;line-height: 18px;background-color: #999;width: 100%; position: relative; z-index: 9;}
+.section_list .section_list_div { position: relative;display: block; padding: 5px 10px; border-bottom: 1px solid #bfbfbf; color:gray;}
+.section_list .section_list_div div { font-size: 0.7rem; line-height: 19px; }
+.section_list .section_list_div span { display: block; position: absolute; right: 10px; top: 50%; margin-top: -7px; font-size: .7rem;  }
+.section_list .section_list_div .section_list_div1 { font-size: 1rem; height: 60px; line-height: 30px; color: black; white-space: nowrap; overflow: hidden; text-overflow:ellipsis;}
+.section_list .section_list_div .section_list_div1 i { font-size: 0.8rem; margin-left: 15px; }
+.section_list .section_list_div .span_changeColor i { color: green; }
+.section_list .section_list_div span i { color: red; }
+</style>
+<script type="text/javascript">
+
+$(function (){
+
+	$(".go_history_list").bind("click",function (){
+    	window.location.href = "history_list.html?uid="+ window.localStorage["uid"]+"&accessToken="+GetString("accessToken");
+    })
+
+    $(".go_process").bind("click",function (){
+    	window.location.href = "process.html?uid="+ window.localStorage["uid"]+"&accessToken="+GetString("accessToken");
+    })
+    $(".go_activity_list").bind("click",function (){
+    	window.location.href = "activity_list.html?uid="+ window.localStorage["uid"] +"&accessToken="+ GetString("accessToken");
+    })
+}) 
+
+// 取得url参数
+function GetString(name){
+
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+
+
+// 安卓配置扫描二维码
+function getCode(a){
+	document.getElementById("mobile").value=a;
+}
+</script>
+</head>
+<body>
+	<details>头部固定</details>
+	<header class="qwl_header" id="header_activity"><span>去玩了签到---补差价</span><img src="images/search.jpg" alt="查找"  class="go_search" style="display:none;" /></header>
+	<div id="chajia" style="width:100%;margin-top:120px;text-align:center;">
+		<img src="images/chajia.jpg" alt="" style="display:inline-block;max-width:100%;">
+	</div>
+	
+	<nav class="nav_three">
+		<details>底部三个签到按钮</details>
+		<a class="go_activity_list">活动列表</a>
+		<a class="go_history_list" >签到历史</a>
+		<a class="go_process">工作流程</a>
+	</nav>
+</body>
+</html>
